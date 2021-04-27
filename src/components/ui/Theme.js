@@ -44,7 +44,7 @@ export default createMuiTheme({
       lineHeight: 1.5,
     },
     h3: {
-      fontFamily: 'Raleway',
+      fontFamily: 'Pacifico',
       fontSize: '2.5rem',
       color: black,
     },
@@ -58,6 +58,11 @@ export default createMuiTheme({
       fontSize: '1.25rem',
       fontweight: 300,
       color: grey,
+    },
+    subtitle2: {
+      color: 'black',
+      fontSize: '1.25rem',
+      fontWeight: 300,
     },
   },
   learnButton: {

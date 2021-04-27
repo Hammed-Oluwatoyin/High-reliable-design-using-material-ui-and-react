@@ -7,7 +7,6 @@ import Hidden from '@material-ui/core/Hidden';
 import facebook from '../../assets/facebook.svg';
 import twitter from '../../assets/twitter.svg';
 import instagram from '../../assets/instagram.svg';
-import Typography from '@material-ui/core/Typography';
 
 const useStyles = makeStyles((theme) => ({
   footer: {
@@ -25,13 +24,12 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.down('sm')]: {
       width: '15em',
     },
-     [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('xs')]: {
       width: '13em',
     },
   },
   mainContainer: {
     position: 'absolute',
-    
   },
   link: {
     color: 'black',
@@ -83,7 +81,7 @@ export default function Footer(props) {
                 to="/"
                 className={classes.link}
               >
-                <Typography color="primary">Home</Typography>
+                Home
               </Grid>
             </Grid>
           </Grid>
