@@ -64,6 +64,11 @@ export default createMuiTheme({
       fontSize: '1.25rem',
       fontWeight: 300,
     },
+    body1: {
+      fontSize: '1.25rem',
+      color: black,
+      fontWeight: 300,
+    },
   },
   learnButton: {
     borderColor: black,
