@@ -1,14 +1,16 @@
-import React, { useState } from 'react';
-import { ThemeProvider } from '@material-ui/styles';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
-import theme from './ui/Theme';
-import Header from '../components/ui/Header';
-import Footer from '../components/ui/Footer';
-import LandingPage from './LandingPage';
-import Services from './Services';
-import CustomSoftware from './CustomSoftware';
-import MobileApps from './MobileApps';
-import Websites from './Websites';
+import React, { useState } from "react";
+import { ThemeProvider } from "@material-ui/styles";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
+import theme from "./ui/Theme";
+import Header from "../components/ui/Header";
+import Footer from "../components/ui/Footer";
+import LandingPage from "./LandingPage";
+import Services from "./Services";
+import CustomSoftware from "./CustomSoftware";
+import MobileApps from "./MobileApps";
+import Websites from "./Websites";
+import Revolution from "./Revolution";
+import About from "./About";
 
 function App() {
   const [value, setValue] = useState(0);
@@ -79,13 +81,30 @@ function App() {
               />
             )}
           />
-
           <Route
             exact
             path="/revolution"
-            component={() => <div>The Revolution</div>}
+            render={(props) => (
+              <Revolution
+                {...props}
+                setValue={setValue}
+                setSelectedIndex={setSelectedIndex}
+              />
+            )}
           />
-          <Route exact path="/about" component={() => <div>About Us</div>} />
+
+          <Route
+            exact
+            path="/about"
+            render={(props) => (
+              <About
+                {...props}
+                setValue={setValue}
+                setSelectedIndex={setSelectedIndex}
+              />
+            )}
+          />
+
           <Route
             exact
             path="/contact"
