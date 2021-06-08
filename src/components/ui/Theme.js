@@ -75,6 +75,32 @@ export default createMuiTheme({
       fontWeight: 300,
     },
   },
+
+  overrides: {
+    MuiInputLabel: {
+      root: {
+        color: black,
+        fontSize: "1rem",
+      },
+    },
+
+    MuiInput: {
+      root: {
+        color: "inherit",
+      },
+
+      underline: {
+        "&:before": {
+          borderBottom: `2px solid ${black}`,
+          color: black,
+        },
+        "&:hover:not($disabled):not($focused):not($error):before": {
+          borderBottom: `2px solid ${black}`,
+          color: black,
+        },
+      },
+    },
+  },
   learnButton: {
     borderColor: black,
     color: black,
