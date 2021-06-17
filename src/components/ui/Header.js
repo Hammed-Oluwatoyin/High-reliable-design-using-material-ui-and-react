@@ -1,23 +1,23 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Button from '@material-ui/core/Button';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import useScrollTrigger from '@material-ui/core/useScrollTrigger';
-import { makeStyles } from '@material-ui/styles';
-import logo from '../../assets/logo.svg';
-import { Link } from 'react-router-dom';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
-import { useTheme } from '@material-ui/core/styles';
-import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
-import MenuIcon from '@material-ui/icons/Menu';
-import IconButton from '@material-ui/core/IconButton';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
+import React, { useState, useEffect, useMemo } from "react";
+import AppBar from "@material-ui/core/AppBar";
+import Toolbar from "@material-ui/core/Toolbar";
+import Button from "@material-ui/core/Button";
+import Tabs from "@material-ui/core/Tabs";
+import Tab from "@material-ui/core/Tab";
+import useScrollTrigger from "@material-ui/core/useScrollTrigger";
+import { makeStyles } from "@material-ui/styles";
+import logo from "../../assets/logo.svg";
+import { Link } from "react-router-dom";
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
+import { useTheme } from "@material-ui/core/styles";
+import SwipeableDrawer from "@material-ui/core/SwipeableDrawer";
+import MenuIcon from "@material-ui/icons/Menu";
+import IconButton from "@material-ui/core/IconButton";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemText from "@material-ui/core/ListItemText";
 
 function ElevationScroll(props) {
   const { children } = props;
@@ -35,50 +35,50 @@ function ElevationScroll(props) {
 const useStyles = makeStyles((theme) => ({
   toolbarMargin: {
     ...theme.mixins.toolbar,
-    marginBottom: '3em',
-    [theme.breakpoints.down('md')]: {
-      marginBottom: '2em',
+    marginBottom: "3em",
+    [theme.breakpoints.down("md")]: {
+      marginBottom: "2em",
     },
-    [theme.breakpoints.down('xs')]: {
-      marginBottom: '1.25em',
+    [theme.breakpoints.down("xs")]: {
+      marginBottom: "1.25em",
     },
   },
   logo: {
-    height: '8em',
-    [theme.breakpoints.down('md')]: {
-      height: '7em',
+    height: "8em",
+    [theme.breakpoints.down("md")]: {
+      height: "7em",
     },
-    [theme.breakpoints.down('xs')]: {
-      height: '5.5em',
+    [theme.breakpoints.down("xs")]: {
+      height: "5.5em",
     },
   },
   logoContainer: {
     padding: 0,
-    '&:hover': {
-      backgroundColor: 'transparent',
+    "&:hover": {
+      backgroundColor: "transparent",
     },
   },
 
   tabContainer: {
-    marginLeft: 'auto',
+    marginLeft: "auto",
   },
 
   tab: {
     ...theme.typography.tab,
     minWidth: 10,
-    marginLeft: '25px',
+    marginLeft: "25px",
   },
 
   button: {
     ...theme.typography.estimate,
-    borderRadius: '50px',
-    marginLeft: '50px',
-    marginRight: '25px',
+    borderRadius: "50px",
+    marginLeft: "50px",
+    marginRight: "25px",
 
-    height: '45px',
-    '&:hover': {
-      color: 'white',
-      backgroundColor: 'black',
+    height: "45px",
+    "&:hover": {
+      color: "white",
+      backgroundColor: "black",
     },
   },
 
@@ -88,19 +88,19 @@ const useStyles = makeStyles((theme) => ({
   menuItem: {
     ...theme.typography.tab,
     opacity: 0.7,
-    '&:hover': {
+    "&:hover": {
       opacity: 1,
     },
   },
   drawerIcon: {
-    height: '50px',
-    width: '50px',
+    height: "50px",
+    width: "50px",
     color: `${theme.palette.common.black}`,
   },
   drawerIconContainer: {
-    marginLeft: 'auto',
-    '&:hover': {
-      backgroundColor: 'transparent',
+    marginLeft: "auto",
+    "&:hover": {
+      backgroundColor: "transparent",
     },
   },
 
@@ -111,14 +111,14 @@ const useStyles = makeStyles((theme) => ({
   drawerItem: {
     ...theme.typography.tab,
     opacity: 0.7,
-    '&:hover': {
+    "&:hover": {
       color: theme.palette.common.white,
       opacity: 1,
     },
   },
   drawerItemEstimate: {
     backgroundColor: theme.palette.common.white,
-    '&:hover': {
+    "&:hover": {
       backgroundColor: theme.palette.common.black,
     },
   },
@@ -133,7 +133,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Header(props) {
   const classes = useStyles();
   const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down('md'));
+  const matches = useMediaQuery(theme.breakpoints.down("md"));
   const iOS = process.browser && /iPad|iPhone|iPod/.test(navigator.userAgent);
 
   const [openDrawer, setOpenDrawer] = useState(false);
@@ -164,26 +164,26 @@ export default function Header(props) {
   const expensiveMenuOptions = useMemo(
     () => [
       {
-        name: 'Services',
-        link: '/services',
+        name: "Services",
+        link: "/services",
         activeIndex: 1,
         selectedIndex: 0,
       },
       {
-        name: 'Custom Software Development',
-        link: '/customsoftware',
+        name: "Custom Software Development",
+        link: "/customsoftware",
         activeIndex: 1,
         selectedIndex: 1,
       },
       {
-        name: 'IOS/Android App Development',
-        link: '/mobileapps',
+        name: "IOS/Android App Development",
+        link: "/mobileapps",
         activeIndex: 1,
         selectedIndex: 2,
       },
       {
-        name: 'Website Development',
-        link: '/websites',
+        name: "Website Development",
+        link: "/websites",
         activeIndex: 1,
         selectedIndex: 3,
       },
@@ -193,28 +193,28 @@ export default function Header(props) {
 
   const routes = useMemo(
     () => [
-      { name: 'Home', link: '/', activeIndex: 0 },
+      { name: "Home", link: "/", activeIndex: 0 },
       {
-        name: 'Services',
-        link: '/services',
+        name: "Services",
+        link: "/services",
         activeIndex: 1,
-        ariaOwns: anchorEl ? 'simple-menu' : undefined,
-        ariaPopup: anchorEl ? 'true' : undefined,
+        ariaOwns: anchorEl ? "simple-menu" : undefined,
+        ariaPopup: anchorEl ? "true" : undefined,
         mouseOver: (event) => handleClick(event),
       },
       {
-        name: 'The Revolution',
-        link: '/revolution',
+        name: "The Revolution",
+        link: "/revolution",
         activeIndex: 2,
       },
       {
-        name: 'About Us',
-        link: '/about',
+        name: "About Us",
+        link: "/about",
         activeIndex: 3,
       },
       {
-        name: 'Contact Us',
-        link: '/contact',
+        name: "Contact Us",
+        link: "/contact",
         activeIndex: 4,
       },
     ],
@@ -235,7 +235,7 @@ export default function Header(props) {
             }
           }
           break;
-        case '/estimate':
+        case "/estimate":
           props.setValue(5);
           break;
         default:
@@ -335,7 +335,7 @@ export default function Header(props) {
               <ListItemText
                 className={
                   props.value === route.activeIndex
-                    ? [classes.drawerItem, classes.drawerItemSelected].join(' ')
+                    ? [classes.drawerItem, classes.drawerItemSelected].join(" ")
                     : classes.drawerItem
                 }
                 disableTypography
@@ -361,7 +361,7 @@ export default function Header(props) {
               disableTypography
               className={
                 props.value === 5
-                  ? [classes.drawerItem, classes.drawerItemSelected].join(' ')
+                  ? [classes.drawerItem, classes.drawerItemSelected].join(" ")
                   : classes.drawerItem
               }
             >
