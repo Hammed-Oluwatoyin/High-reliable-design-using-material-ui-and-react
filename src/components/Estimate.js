@@ -55,7 +55,7 @@ const useStyles = makeStyles((theme) => ({
     height: 50,
     width: 225,
     fontSize: "1.25rem",
-    marginTop: "5em",
+    marginTop: "2em",
     "&:hover": {
       backgroundColor: theme.palette.common.black,
       color: "white",
@@ -63,14 +63,15 @@ const useStyles = makeStyles((theme) => ({
   },
   message: {
     border: `2px solid ${theme.palette.common.black}`,
-    marginTop: "5em",
+    marginTop: "3em",
+    marginBottom: "2em",
     borderRadius: 5,
   },
   specialText: {
     fontFamily: "Raleway",
     fontWeight: 700,
     fontSize: "2rem",
-    color: theme.palette.common.lightPink,
+    color: theme.palette.common.black,
   },
 }));
 
@@ -365,6 +366,8 @@ const websiteQuestions = [
 export default function Estimate() {
   const classes = useStyles();
   const theme = useTheme();
+  const matchesMD = useMediaQuery(theme.breakpoints.down("md"));
+  const matchesSM = useMediaQuery(theme.breakpoints.down("sm"));
 
   const [questions, setQuestions] = useState(defaultQuestions);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -378,8 +381,16 @@ export default function Estimate() {
 
   const [message, setMessage] = useState("");
 
-  const [users, setUsers] = useState("");
   const [total, setTotal] = useState(0);
+
+  const [service, setService] = useState([]);
+  const [platforms, setPlatforms] = useState([]);
+  const [features, setFeatures] = useState([]);
+  const [customFeatures, setCustomFeatures] = useState("");
+  const [category, setCategory] = useState("");
+  const [users, setUsers] = useState("");
+  const [alert, setAlert] = useState({ open: false, message: "", color: "" });
+  const [loading, setLoading] = useState(false);
 
   const estimateOptions = {
     loop: true,
@@ -486,6 +497,11 @@ export default function Estimate() {
           previousSelected[0].selected = !previousSelected[0].selected;
         }
         newSelected.selected = !newSelected.selected;
+
+        if (previousSelected[0] && previousSelected[0] === newSelected) {
+          newSelected.selected = !newSelected.selected;
+        }
+
         break;
       default:
         newSelected.selected = !newSelected.selected;
@@ -495,12 +511,33 @@ export default function Estimate() {
     switch (newSelected.title) {
       case "Custom Software Development":
         setQuestions(softwareQuestions);
+        setService(newSelected.title);
+        setPlatforms([]);
+        setFeatures([]);
+        setCustomFeatures("");
+        setCategory("");
+        setUsers("");
         break;
+
       case "iOS/Android App Development":
         setQuestions(softwareQuestions);
+        setService(newSelected.title);
+        setPlatforms([]);
+        setFeatures([]);
+        setCustomFeatures("");
+        setCategory("");
+        setUsers("");
+
         break;
       case "Website Development":
         setQuestions(websiteQuestions);
+        setService(newSelected.title);
+        setPlatforms([]);
+        setFeatures([]);
+        setCustomFeatures("");
+        setCategory("");
+        setUsers("");
+
         break;
       default:
         setQuestions(newQuestions);
@@ -534,15 +571,285 @@ export default function Estimate() {
     setTotal(cost);
   };
 
+  const getPlatforms = () => {
+    let newPlatforms = [];
+
+    if (questions.length > 2) {
+      questions
+        .filter(
+          (question) =>
+            question.title === "Which platforms do you need supported?"
+        )
+        .map((question) =>
+          question.options.filter((option) => option.selected)
+        )[0]
+        .map((option) => newPlatforms.push(option.title));
+    }
+
+    setPlatforms(newPlatforms);
+  };
+
+  const getFeatures = () => {
+    let newFeatures = [];
+
+    if (questions.length > 2) {
+      questions
+        .filter(
+          (question) =>
+            question.title === "Which features do you expect to use?"
+        )
+        .map((question) => question.options.filter((option) => option.selected))
+        .map((option) =>
+          option.map((newFeature) => newFeatures.push(newFeature.title))
+        );
+    }
+
+    setFeatures(newFeatures);
+  };
+
+  const getCustomFeatures = () => {
+    if (questions.length > 2) {
+      const newCustomFeatures = questions
+        .filter(
+          (question) =>
+            question.title ===
+            "What type of custom features do you expect to need?"
+        )
+        .map((question) =>
+          question.options.filter((option) => option.selected)
+        )[0][0].title;
+
+      console.log(newCustomFeatures);
+      setCustomFeatures(newCustomFeatures);
+    }
+  };
+
+  const getCategory = () => {
+    if (questions.length === 2) {
+      const newCategory = questions
+        .filter(
+          (question) =>
+            question.title === "Which type of website are you wanting?"
+        )[0]
+        .options.filter((option) => option.selected)[0].title;
+      setCategory(newCategory);
+    }
+  };
+
+  const fakeRequest = (url) => {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        const pages = {
+          "https://us-central1-material-ui-course": {
+            data: "message was sent successfully",
+          },
+        };
+
+        const data = pages[url];
+        if (data) {
+          resolve({ status: 200, data });
+        } else {
+          reject({ status: 404 });
+        }
+      }, 5000);
+    });
+  };
+
+  const sendEstimate = () => {
+    setLoading(true);
+    fakeRequest("https://us-central1-material-ui-course")
+      .then((res) => {
+        setLoading(false);
+
+        setName("");
+        setEmail("");
+        setPhone("");
+        setMessage("");
+        setAlert({
+          open: true,
+          message: "estmate placed successfully",
+          backgroundColor: "#4BB543",
+        });
+        setDialogOpen(false);
+
+        console.log(res);
+      })
+      .catch((err) => {
+        setLoading(false);
+        setAlert({
+          open: "true",
+          message: "Something went wrong, please try again",
+          backgroundColor: "#FF3232",
+        });
+      });
+  };
+
+  const estimateDisabled = () => {
+    let disabled = true;
+
+    const emptySelections = questions
+      .map((question) => question.options.filter((option) => option.selected))
+      .filter((question) => question.length === 0);
+
+    if (questions.length === 2) {
+      if (emptySelections.length === 1) {
+        disabled = false;
+      }
+    } else if (questions.length === 1) {
+      disabled = true;
+    } else if (
+      emptySelections.length < 2 &&
+      questions[questions.length - 1].options.filter(
+        (option) => option.selected
+      ).length > 0
+    ) {
+      disabled = false;
+    }
+    return disabled;
+  };
+
+  const softwareSelection = (
+    <Grid container direction="column">
+      <Grid
+        item
+        container
+        alignItems="center"
+        style={{ marginBottom: "1.25em" }}
+      >
+        <Grid item xs={2}>
+          <img src={check} alt="checkmark" />
+        </Grid>
+        <Grid item xs={10}>
+          {/*--------------------PLATFORMS-------------------------*/}
+          <Typography variant="body1">
+            You want {service}
+            {" for "}
+            {platforms.length > 0
+              ? //if only web application is selected...
+                platforms.indexOf("Web Application") > -1 &&
+                platforms.length === 1
+                ? //then finish sentence here
+                  "a Web Application."
+                : //otherwise, if web application and another platform is selected...
+                platforms.indexOf("Web Application") > -1 &&
+                  platforms.length === 2
+                ? //then finish the sentence here
+                  `a Web Application and an ${platforms[1]}.`
+                : //otherwise, if only one platform is selected which isn't web application...
+                platforms.length === 1
+                ? //then finish the sentence here
+                  `an ${platforms[0]}`
+                : //otherwise, if other two options are selected...
+                platforms.length === 2
+                ? //then finish the sentence here
+                  "an iOS Application and an Android Application."
+                : //otherwise if all three are selected...
+                platforms.length === 3
+                ? //then finish the sentence here
+                  "a Web Application, an iOS Application, and an Android Application."
+                : null
+              : null}
+          </Typography>
+          {/*--------------------PLATFORMS-------------------------*/}
+        </Grid>
+      </Grid>
+      <Grid
+        item
+        container
+        alignItems="center"
+        style={{ marginBottom: "1.25em" }}
+      >
+        <Grid item xs={2}>
+          <img src={check} alt="checkmark" />
+        </Grid>
+        <Grid item xs={10}>
+          {/*--------------------FEATURES-------------------------*/}
+          <Typography variant="body1">
+            {"with "}
+            {/* if we have features... */}
+            {features.length > 0
+              ? //...and there's only 1...
+                features.length === 1
+                ? //then end the sentence here
+                  `${features[0]}.`
+                : //otherwise, if there are two features...
+                features.length === 2
+                ? //...then end the sentence here
+                  `${features[0]} and ${features[1]}.`
+                : //otherwise, if there are three or more features...
+                  features
+                    //filter out the very last feature...
+                    .filter((feature, index) => index !== features.length - 1)
+                    //and for those features return their name...
+                    .map((feature, index) => (
+                      <span key={index}>{`${feature}, `}</span>
+                    ))
+              : null}
+            {features.length > 2
+              ? //...and then finally add the last feature with 'and' in front of it
+                ` and ${features[features.length - 1]}.`
+              : null}
+          </Typography>
+          {/*--------------------FEATURES-------------------------*/}
+        </Grid>
+      </Grid>
+      <Grid item container alignItems="center">
+        <Grid item xs={2}>
+          <img src={check} alt="checkmark" />
+        </Grid>
+        <Grid item xs={10}>
+          <Typography variant="body1">
+            The Custom features will be of {customFeatures.toLowerCase()}
+            {`, and the project will be used by about ${users} users.`}
+          </Typography>
+        </Grid>
+      </Grid>
+    </Grid>
+  );
+
+  const websiteSelection = (
+    <Grid container direction="column" style={{ marginTop: "14em" }}>
+      <Grid item container alignItems="center">
+        <Grid item xs={2}>
+          <img src={check} alt="checkmark" />
+        </Grid>
+        <Grid item xs={10}>
+          <Typography variant="body1">
+            You want{" "}
+            {category === "Basic"
+              ? "a Basic Website"
+              : `an ${category} Website.`}
+          </Typography>
+        </Grid>
+      </Grid>
+    </Grid>
+  );
+
   return (
     <Grid container direction="row">
-      <Grid item container direction="column" lg>
-        <Grid item style={{ marginTop: "2em", marginLeft: "5em" }}>
-          <Typography variant="h2">Estimate</Typography>
+      <Grid
+        item
+        container
+        direction="column"
+        lg
+        alignItems={matchesMD ? "center" : undefined}
+      >
+        <Grid
+          item
+          style={{ marginTop: "2em", marginLeft: matchesMD ? 0 : "5em" }}
+        >
+          <Typography align={matchesMD ? "center" : undefined} variant="h2">
+            Estimate
+          </Typography>
         </Grid>
         <Grid
           item
-          style={{ marginRight: "10em", maxWidth: "50em", marginTop: "7.5em" }}
+          style={{
+            marginRight: matchesMD ? 0 : "10em",
+            maxWidth: "50em",
+
+            marginTop: "7.5em",
+          }}
         >
           <Lottie options={estimateOptions} height="100%" width="100%" />
         </Grid>
@@ -552,7 +859,7 @@ export default function Estimate() {
         container
         alignItems="center"
         direction="column"
-        style={{ marginRight: "2em", marginBottom: "25em" }}
+        style={{ marginRight: matchesMD ? 0 : "2em", marginBottom: "25em" }}
         lg
       >
         {questions
@@ -585,8 +892,9 @@ export default function Estimate() {
               </Grid>
 
               <Grid item container>
-                {question.options.map((option) => (
+                {question.options.map((option, index) => (
                   <Grid
+                    key={index}
                     item
                     container
                     direction="column"
@@ -596,6 +904,7 @@ export default function Estimate() {
                     style={{
                       display: "grid",
                       textTransform: "none",
+                      marginBottom: matchesSM ? "1.5em" : 0,
                       backgroundColor: option.selected
                         ? theme.palette.common.lightPink
                         : null,
@@ -656,12 +965,17 @@ export default function Estimate() {
               />
             </IconButton>
           </Grid>
-          <Grid item>
+          <Grid item style={{ marginLeft: matchesSM ? "1.8em" : 0 }}>
             <Button
+              disabled={estimateDisabled()}
               variant="contained"
               onClick={() => {
                 setDialogOpen(true);
                 getTotal();
+                getPlatforms();
+                getFeatures();
+                getCustomFeatures();
+                getCategory();
               }}
               className={classes.estimateButton}
             >
@@ -670,75 +984,172 @@ export default function Estimate() {
           </Grid>
         </Grid>
       </Grid>
-      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
+      <Dialog
+        style={{ zIndex: 1302 }}
+        open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
+        fullWidth
+        maxWidth="lg"
+        fullScreen={matchesSM}
+      >
         <Grid container justify="center">
-          <Grid item>
+          <Grid item style={{ marginTop: "1em" }}>
             <Typography variant="h2" align="center">
               Estimate
             </Typography>
           </Grid>
         </Grid>
         <DialogContent>
-          <Grid item container direction="column">
-            <Grid item style={{ marginBottom: "0.5em" }}>
-              <TextField
-                label="Name"
-                id="name"
-                fullWidth
-                value={name}
-                onChange={(event) => setName(event.target.value)}
-              />
+          <Grid
+            container
+            justify="space-around"
+            direction={matchesSM ? "column" : "row"}
+            alignItems={matchesSM ? "center" : undefined}
+          >
+            <Grid
+              item
+              container
+              direction="column"
+              md={7}
+              style={{ maxWidth: "30em" }}
+            >
+              <Grid item style={{ marginBottom: "0.5em" }}>
+                <TextField
+                  label="Name"
+                  id="name"
+                  fullWidth
+                  value={name}
+                  onChange={(event) => setName(event.target.value)}
+                />
+              </Grid>
+              <Grid item>
+                <TextField
+                  style={{ marginBottom: "0.5em" }}
+                  label="Email"
+                  id="email"
+                  error={emailHelper.length !== 0}
+                  helperText={emailHelper}
+                  fullWidth
+                  value={email}
+                  onChange={onChange}
+                />
+              </Grid>
+              <Grid item>
+                <TextField
+                  style={{ marginBottom: "0.5em" }}
+                  label="Phone"
+                  error={phoneHelper.length !== 0}
+                  helperText={phoneHelper}
+                  fullWidth
+                  id="phone"
+                  value={phone}
+                  onChange={onChange}
+                />
+              </Grid>
+              <Grid item>
+                <TextField
+                  fullWidth
+                  InputProps={{ disableUnderline: true }}
+                  id="message"
+                  multiline
+                  placeholder="Tell us more about your project"
+                  rows={10}
+                  value={message}
+                  className={classes.message}
+                  onChange={(event) => setMessage(event.target.value)}
+                />
+              </Grid>
+              <Grid item>
+                <Typography
+                  variant="body1"
+                  align={matchesSM ? "center" : undefined}
+                  paragraph
+                  style={{ lineHeight: 1.1 }}
+                >
+                  We can create this digital solution for an estimated
+                  <span className={classes.specialText}>
+                    ${total.toFixed(2)}
+                  </span>
+                </Typography>
+                <Typography
+                  variant="body1"
+                  align={matchesSM ? "center" : undefined}
+                  paragraph
+                >
+                  Fill out your name, phone number and email, place your
+                  request, and we'll back to you with details moving forward and
+                  a final price
+                </Typography>
+              </Grid>
             </Grid>
-            <Grid item>
-              <TextField
-                style={{ marginBottom: "0.5em" }}
-                label="Email"
-                id="email"
-                error={emailHelper.length !== 0}
-                helperText={emailHelper}
-                fullWidth
-                value={email}
-                onChange={onChange}
-              />
-            </Grid>
-            <Grid item>
-              <TextField
-                style={{ marginBottom: "0.5em" }}
-                label="Phone"
-                error={phoneHelper.length !== 0}
-                helperText={phoneHelper}
-                fullWidth
-                id="phone"
-                value={phone}
-                onChange={onChange}
-              />
-            </Grid>
-            <Grid item>
-              <TextField
-                fullWidth
-                InputProps={{ disableUnderline: true }}
-                id="message"
-                multiline
-                rows={10}
-                value={message}
-                className={classes.message}
-                onChange={(event) => setMessage(event.target.value)}
-              />
-            </Grid>
-            <Grid item>
-              <Typography variant="body1" paragraph>
-                We can create this digital solution for an estimated
-                <span className={classes.specialText}>${total.toFixed(2)}</span>
-              </Typography>
-              <Typography variant="body1" paragraph>
-                Fill out your name, phone number and email, place your request,
-                and we'll back to you with details moving forward and a final
-                price
-              </Typography>
+            <Grid
+              item
+              container
+              direction="column"
+              alignItems={matchesSM ? "center" : undefined}
+              md={5}
+              style={{ maxWidth: "30em" }}
+            >
+              <Hidden smDown>
+                <Grid item>
+                  {questions.length > 2 ? softwareSelection : websiteSelection}
+                </Grid>
+              </Hidden>
+
+              <Grid item>
+                <Button
+                  disabled={
+                    name.length === 0 ||
+                    message.length === 0 ||
+                    email.length === 0 ||
+                    phone.length === 0 ||
+                    phoneHelper.length !== 0 ||
+                    emailHelper.length !== 0
+                  }
+                  variant="contained"
+                  onClick={() => {
+                    sendEstimate();
+                  }}
+                  className={classes.estimateButton}
+                >
+                  {loading ? (
+                    <CircularProgress />
+                  ) : (
+                    <React.Fragment>
+                      Place Request
+                      <img
+                        src={send}
+                        alt="paper airplane"
+                        style={{ marginLeft: "0.5em" }}
+                      />
+                    </React.Fragment>
+                  )}
+                </Button>
+              </Grid>
+              <Grid item>
+                <Button
+                  className={classes.estimateButton}
+                  style={{ fontWeight: 700 }}
+                  color="primary"
+                  onClick={() => setDialogOpen(false)}
+                >
+                  Cancel
+                </Button>
+              </Grid>
             </Grid>
           </Grid>
         </DialogContent>
       </Dialog>
+      <Snackbar
+        open={alert.open}
+        message={alert.message}
+        ContentProps={{
+          style: { backgroundColor: alert.backgroundColor, fontSize: "1.5em" },
+        }}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        onClose={() => setAlert({ ...alert, open: false })}
+        autoHideDuration={5000}
+      />
     </Grid>
   );
 }

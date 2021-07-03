@@ -15,6 +15,9 @@ import emailIcon from "../assets/email.svg";
 import airplane from "../assets/send.svg";
 import mobileBackground from "../assets/mobileBackground.jpg";
 
+import CircularProgress from "@material-ui/core/CircularProgress";
+import Snackbar from "@material-ui/core/Snackbar";
+
 const useStyles = makeStyles((theme) => ({
   background: {
     backgroundImage: `url(${background})`,
@@ -99,6 +102,8 @@ export default function Contact(props) {
   const [message, setMessage] = useState("");
 
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [alert, setAlert] = useState({ open: false, message: "", color: "" });
 
   const onChange = (event) => {
     let valid;
@@ -129,6 +134,61 @@ export default function Contact(props) {
       default:
         break;
     }
+  };
+
+  const buttonContents = (
+    <React.Fragment>
+      Send Message
+      <img src={airplane} alt="paper airplane" style={{ marginLeft: "1em" }} />
+    </React.Fragment>
+  );
+
+  const fakeRequest = (url) => {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        const pages = {
+          "https://us-central1-material-ui-course": {
+            data: "message was sent successfully",
+          },
+        };
+
+        const data = pages[url];
+        if (data) {
+          resolve({ status: 200, data });
+        } else {
+          reject({ status: 404 });
+        }
+      }, 5000);
+    });
+  };
+
+  const onConfirm = () => {
+    setLoading(true);
+    fakeRequest("https://us-central1-material-ui-course")
+      .then((res) => {
+        setLoading(false);
+
+        setName("");
+        setEmail("");
+        setPhone("");
+        setMessage("");
+        setAlert({
+          open: true,
+          message: "Message sent successfully",
+          backgroundColor: "#4BB543",
+        });
+        setOpen(false);
+
+        console.log(res);
+      })
+      .catch((err) => {
+        setLoading(false);
+        setAlert({
+          open: "true",
+          message: "Something went wrong, please try again",
+          backgroundColor: "#FF3232",
+        });
+      });
   };
 
   return (
@@ -260,6 +320,7 @@ export default function Contact(props) {
                 InputProps={{ disableUnderline: true }}
                 id="message"
                 multiline
+                placeholder="Please tell us more about your projects"
                 rows={10}
                 value={message}
                 className={classes.message}
@@ -280,12 +341,7 @@ export default function Contact(props) {
                 className={classes.sendButton}
                 onClick={() => setOpen(true)}
               >
-                Send message
-                <img
-                  src={airplane}
-                  alt="paper airplane"
-                  style={{ marginLeft: "1rem" }}
-                />
+                {buttonContents}
               </Button>
             </Grid>
           </Grid>
@@ -293,7 +349,7 @@ export default function Contact(props) {
       </Grid>
       <Dialog
         open={open}
-        fullScreen={matchesXS}
+        fullScreen={matchesSM}
         onClose={() => {
           setOpen(false);
         }}
@@ -336,9 +392,8 @@ export default function Contact(props) {
                 onChange={(event) => setName(event.target.value)}
               />
             </Grid>
-            <Grid item>
+            <Grid item style={{ marginBottom: "0.5em" }}>
               <TextField
-                style={{ marginBottom: "0.5em" }}
                 label="Email"
                 id="email"
                 error={emailHelper.length !== 0}
@@ -348,7 +403,7 @@ export default function Contact(props) {
                 onChange={onChange}
               />
             </Grid>
-            <Grid item>
+            <Grid item style={{ marginBottom: "0.5em" }}>
               <TextField
                 style={{ marginBottom: "0.5em" }}
                 label="Phone"
@@ -361,7 +416,7 @@ export default function Contact(props) {
               />
             </Grid>
 
-            <Grid item>
+            <Grid item style={{ width: matchesSM ? "100%" : "35em" }}>
               <TextField
                 fullWidth
                 InputProps={{ disableUnderline: true }}
@@ -403,24 +458,29 @@ export default function Contact(props) {
                   }
                   variant="contained"
                   className={classes.sendButton}
-                  onClick={() => setOpen(true)}
+                  onClick={() => onConfirm()}
                   style={{
                     marginBottom: "2em",
                     marginLeft: matchesMD ? 0 : "2em",
                   }}
                 >
-                  Send message
-                  <img
-                    src={airplane}
-                    alt="paper airplane"
-                    style={{ marginLeft: "1rem" }}
-                  />
+                  {loading ? <CircularProgress size={30} /> : buttonContents}
                 </Button>
               </Grid>
             </Grid>
           </Grid>
         </DialogContent>
       </Dialog>
+      <Snackbar
+        open={alert.open}
+        message={alert.message}
+        ContentProps={{
+          style: { backgroundColor: alert.backgroundColor, fontSize: "1.5em" },
+        }}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        onClose={() => setAlert({ ...alert, open: false })}
+        autoHideDuration={5000}
+      />
 
       <Grid
         item

@@ -236,7 +236,7 @@ export default function Header(props) {
           }
           break;
         case "/estimate":
-          props.setValue(5);
+           props.setValue(5);
           break;
         default:
           break;
@@ -270,7 +270,7 @@ export default function Header(props) {
         to="/estimate"
         variant="contained"
         color="secondary"
-        onClick={() => props.setValue(5)}
+        onClick={()=> props.setValue(5)}
       >
         Free Estimate
       </Button>
